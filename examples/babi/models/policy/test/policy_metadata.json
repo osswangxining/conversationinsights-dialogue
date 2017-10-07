@@ -1,0 +1,9 @@
+{
+  "ensemble_name": "conversationinsights.policies.ensemble.SimplePolicyEnsemble", 
+  "conversationinsights": "0.1", 
+  "policy_names": [
+    "conversationinsights.policies.memoization.MemoizationPolicy", 
+    "examples.restaurant_example.RestaurantPolicy"
+  ], 
+  "max_history": 3
+}

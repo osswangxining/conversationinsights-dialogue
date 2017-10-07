@@ -1,0 +1,75 @@
+actions:
+- greet
+- goodbye
+- default
+- ack_dosearch
+- ack_findalternatives
+- ack_makereservation
+- ask_cuisine
+- ask_helpmore
+- ask_howcanhelp
+- ask_location
+- ask_moreupdates
+- ask_numpeople
+- ask_price
+- on_it
+- examples.restaurant_example.ActionSearchRestaurants
+- examples.restaurant_example.ActionSuggest
+config:
+  store_entities_as_slots: true
+entities:
+- location
+- info
+- people
+- price
+- cuisine
+intents:
+- greet
+- affirm
+- deny
+- inform
+- thankyou
+- request_info
+slots:
+  cuisine:
+    type: text
+  info:
+    type: text
+  location:
+    type: text
+  matches:
+    type: list
+  people:
+    type: text
+  price:
+    type: text
+templates:
+  utter_ack_dosearch:
+  - 好的，我帮您查一下。
+  utter_ack_findalternatives:
+  - 那看一下还有没有其他的。
+  utter_ack_makereservation:
+  - OK，那就帮您预定了。
+  utter_ask_cuisine:
+  - 请问您需要什么菜系？
+  utter_ask_helpmore:
+  - 请问还需要其他服务吗？
+  utter_ask_howcanhelp:
+  - 您好，请问有什么可以帮到您？
+  utter_ask_location:
+  - 请问在哪个城市？
+  utter_ask_moreupdates:
+  - 还有其他需要更改的吗？
+  utter_ask_numpeople:
+  - 请问几个人？
+  utter_ask_price:
+  - 请问需要什么价位？
+  utter_default:
+  - 对不起，没理解您在说什么！
+  utter_goodbye:
+  - 再见 :)
+  utter_greet:
+  - hey 你好!
+  utter_on_it:
+  - 好的，没问题。
+topics: []

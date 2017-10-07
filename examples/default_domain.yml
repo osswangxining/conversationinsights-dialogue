@@ -1,0 +1,20 @@
+intents:
+ - greet
+ - default
+ - goodbye
+
+entities:
+ - name
+
+templates:
+  utter_greet:
+    - "你好！"
+  utter_goodbye:
+    - "再见 :("
+  utter_default:
+    - "对不起，我不明白你在说什么？"
+
+actions:
+  - default
+  - greet
+  - goodbye

@@ -1,0 +1,9 @@
+{
+  "ensemble_name": "conversationinsights.policies.ensemble.SimplePolicyEnsemble",
+  "conversationinsights": "0.1",
+  "policy_names": [
+    "conversationinsights.policies.memoization.MemoizationPolicy",
+    "examples.concerts.policy.ConcertPolicy"
+  ], 
+  "max_history": 2
+}
