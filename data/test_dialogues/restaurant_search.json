@@ -1,0 +1,39 @@
+{
+  "py/object": "conversationinsights.conversation.Dialogue",
+  "events": [
+    {
+      "py/object": "conversationinsights.events.UserUtterance",
+      "entities": [
+        {
+          "entity": "cuisine",
+          "value": "indian"
+        },
+        {
+          "entity": "location",
+          "value": "central"
+        }
+      ],
+      "intent": {
+        "name": "search_restaurant",
+        "confidence": 1.0
+      },
+      "text": "_search_restaurant[cuisine=indian,location=central]"
+    },
+    {
+      "py/object": "conversationinsights.events.ExecutedAction",
+      "action_name": "action_greet",
+      "unpredictable": false
+    },
+    {
+      "py/object": "conversationinsights.events.SetSlot",
+      "value": "indian",
+      "key": "cuisine"
+    },
+    {
+      "py/object": "conversationinsights.events.SetSlot",
+      "value": "central",
+      "key": "location"
+    }
+  ],
+  "name": "restaurant_search"
+}

@@ -1,0 +1,39 @@
+{
+  "py/object": "conversationinsights.conversation.Dialogue",
+  "name": "inform_but_no_change_wanted",
+  "events": [
+    {
+      "py/object": "conversationinsights.events.UserUtterance",
+      "entities": [],
+      "intent": {
+        "name": "inform_addresschange",
+        "confidence": 1.0
+      },
+      "text": "_inform_addresschange"
+    },
+    {
+      "py/object": "conversationinsights.events.ExecutedAction",
+      "action_name": "action_bot_taking_over",
+      "unpredictable": false
+    },
+    {
+      "py/object": "conversationinsights.events.ExecutedAction",
+      "action_name": "action_ask_for_address_change",
+      "unpredictable": false
+    },
+    {
+      "py/object": "conversationinsights.events.UserUtterance",
+      "entities": [],
+      "intent": {
+        "name": "deny",
+        "confidence": 1.0
+      },
+      "text": "_deny"
+    },
+    {
+      "py/object": "conversationinsights.events.ExecutedAction",
+      "action_name": "action_no_address_change",
+      "unpredictable": false
+    }
+  ]
+}

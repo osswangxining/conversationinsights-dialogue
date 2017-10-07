@@ -1,0 +1,24 @@
+{
+  "py/object": "conversationinsights.conversation.Dialogue",
+  "events": [
+    {
+      "py/object": "conversationinsights.events.UserUtterance",
+      "entities": [],
+      "intent": {
+        "name": "ask_question",
+        "confidence": 1.0
+      },
+      "text": "_ask_question"
+    },
+    {
+      "py/object": "conversationinsights.events.ExecutedAction",
+      "action_name": "action_answer_question",
+      "unpredictable": false
+    },
+    {
+      "py/object": "conversationinsights.events.SetTopic",
+      "topic": "question"
+    }
+  ],
+  "name": "topic_question"
+}

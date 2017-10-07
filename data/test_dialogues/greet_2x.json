@@ -1,0 +1,34 @@
+{
+  "py/object": "conversationinsights.conversation.Dialogue",
+  "events": [
+    {
+      "py/object": "conversationinsights.events.UserUtterance",
+      "entities": [],
+      "intent": {
+        "name": "greet",
+        "confidence": 1.0
+      },
+      "text": "_greet"
+    },
+    {
+      "py/object": "conversationinsights.events.ExecutedAction",
+      "action_name": "action_greet",
+      "unpredictable": false
+    },
+    {
+      "py/object": "conversationinsights.events.UserUtterance",
+      "entities": [],
+      "intent": {
+        "name": "greet",
+        "confidence": 1.0
+      },
+      "text": "_greet"
+    },
+    {
+      "py/object": "conversationinsights.events.ExecutedAction",
+      "action_name": "action_greet",
+      "unpredictable": false
+    }
+  ],
+  "name": "hello_world_2x"
+}
