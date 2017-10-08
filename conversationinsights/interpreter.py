@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 import logging
 import re
 
+import os
 import requests
 from builtins import str
 
@@ -14,19 +15,25 @@ logger = logging.getLogger(__name__)
 
 class NaturalLanguageInterpreter(object):
     def parse(self, text):
-        raise NotImplementedError("Interpreter needs to be able to parse messages into structured output.")
+        raise NotImplementedError(
+                "Interpreter needs to be able to parse "
+                "messages into structured output.")
 
     @staticmethod
     def create(obj):
         if isinstance(obj, NaturalLanguageInterpreter):
             return obj
+        if isinstance(obj, str):
+            return RasaNLUInterpreter(model_directory=obj)
         return None
 
 
 class RegexInterpreter(NaturalLanguageInterpreter):
     @staticmethod
     def extract_intent_and_entities(user_input):
-        m = re.search('^_([^\[]+)(\[(.+)\])?', user_input)
+        value_assign_rx = '\s*(.+)\s*=\s*(.+)\s*'
+        structed_message_rx = '^_([^\[]+)(\[(.+)\])?'
+        m = re.search(structed_message_rx, user_input)
         if m is not None:
             intent = m.group(1).lower()
             offset = m.start(3)
@@ -34,7 +41,7 @@ class RegexInterpreter(NaturalLanguageInterpreter):
             entities = []
             if entities_str is not None:
                 for entity_str in entities_str.split(','):
-                    for match in re.finditer('\s*(.+)\s*=\s*(.+)\s*', entity_str):
+                    for match in re.finditer(value_assign_rx, entity_str):
                         start = match.start(2) + offset
                         end = match.end(0) + offset
                         entity = {
@@ -71,18 +78,25 @@ class MyNLUHttpInterpreter(NaturalLanguageInterpreter):
         self.server = server
 
     def parse(self, text):
-        """Parses a text message. Returns a default value if the parsing of the text failed."""
+        """Parses a text message.
 
-        default_return = {"intent": {"name": "", "confidence": 0.0}, "entities": [], "text": ""}
-        result = self._nlu_http_parse(text)
+        Returns a default value if the parsing of the text failed."""
+
+        default_return = {"intent": {"name": "", "confidence": 0.0},
+                          "entities": [], "text": ""}
+        result = self._http_parse(text)
 
         return result if result is not None else default_return
 
-    def _nlu_http_parse(self, text):
-        """Send a text message to a running NLU http server. Returns `None` on failure."""
+    def _http_parse(self, text):
+        """Send a text message to a running MyNLU http server.
+
+        Returns `None` on failure."""
+
         if not self.server:
-            logger.error("Failed to parse text '{}' using NLU over http. No NLU server specified!".format(
-                    text))
+            logger.error(
+                    "Failed to parse text '{}' using MyNLU over http. "
+                    "No MyNLU server specified!".format(text))
             return None
 
         params = {
@@ -96,8 +110,42 @@ class MyNLUHttpInterpreter(NaturalLanguageInterpreter):
             if result.status_code == 200:
                 return result.json()
             else:
-                logger.error("Failed to parse text '{}' using NLU over http. Error: {}".format(text, result.text))
+                logger.error(
+                        "Failed to parse text '{}' using rasa NLU over http. "
+                        "Error: {}".format(text, result.text))
                 return None
         except Exception as e:
-            logger.error("Failed to parse text '{}' using NLU over http. Error: {}".format(text, e))
+            logger.error(
+                    "Failed to parse text '{}' using rasa NLU over http. "
+                    "Error: {}".format(text, e))
             return None
+
+
+class RasaNLUInterpreter(NaturalLanguageInterpreter):
+    def __init__(self, model_directory, config_file=None, lazy_init=False):
+        from rasa_nlu.model import Interpreter
+        from rasa_nlu.model import Metadata
+        from rasa_nlu.config import RasaNLUConfig
+        self.metadata = Metadata.load(model_directory)
+        self.lazy_init = lazy_init
+        self.config_file = config_file
+
+        if not lazy_init:
+            self.interpreter = Interpreter.load(self.metadata,
+                                                RasaNLUConfig(config_file,
+                                                              os.environ))
+        else:
+            self.interpreter = None
+
+    def parse(self, text):
+        """Parses a text message.
+
+        Returns a default value if the parsing of the text failed."""
+
+        if self.lazy_init and self.interpreter is None:
+            from rasa_nlu.model import Interpreter
+            from rasa_nlu.config import RasaNLUConfig
+            self.interpreter = Interpreter.load(self.metadata,
+                                                RasaNLUConfig(self.config_file,
+                                                              os.environ))
+        return self.interpreter.parse(text)
