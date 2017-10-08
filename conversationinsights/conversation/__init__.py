@@ -30,3 +30,9 @@ class Topic(object):
 
     def __init__(self, name):
         self.name = name
+
+# The default topic will not carry a name nor will it overwrite the topic of a dialog
+# e.g. if an action of this default topic is executed, the previous topic is kept active
+DefaultTopic = Topic(None)
+
+QuestionTopic = Topic("question")
