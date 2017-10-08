@@ -77,7 +77,7 @@ class Agent(object):
 
         :Example:
 
-            >>> from rasa_core.agent import Agent
+            >>> from conversationinsights.agent import Agent
             >>> agent = Agent.load("examples/babi/models/policy/current",
             ... interpreter="examples/babi/models/nlu/current_py2")
             >>> agent.handle_message("hello")
