@@ -74,7 +74,7 @@ class UtterAction(Action):
     def run(self, dispatcher, tracker, domain):
         """Simple run implementation uttering the (hopefully defined) template."""
 
-        dispatcher.utter_template("utter_" + self.name())
+        dispatcher.utter_template(self.name())
         return []
 
     def name(self):
@@ -90,7 +90,7 @@ class ActionListen(Action):
     The bot should stop taking further actions and wait for the user to say something."""
 
     def name(self):
-        return ACTION_LISTEN_NAME[len("action_"):]
+        return ACTION_LISTEN_NAME
 
     def run(self, dispatcher, tracker, domain):
         return []
@@ -100,12 +100,12 @@ class ActionRestart(Action):
     """Resets the tracker to its initial state. Utters the restart template if available."""
 
     def name(self):
-        return ACTION_RESTART_NAME[len("action_"):]
+        return ACTION_RESTART_NAME
 
     def run(self, dispatcher, tracker, domain):
-        from conversationinsights.trackers import Restart
+        from conversationinsights.events import Restarted
 
         # only utter the template if it is available
         if domain.random_template_for("utter_restart") is not None:
             dispatcher.utter_template("utter_restart")
-        return [Restart()]
+        return [Restarted()]
