@@ -17,7 +17,7 @@ from conversationinsights.trackers import DialogueStateTracker
 from typing import Optional, List, Any
 
 from conversationinsights.policies.policy import Policy
-from conversationinsights.util import create_dir_for_file
+from conversationinsights import utils
 
 logger = logging.getLogger(__name__)
 
@@ -37,7 +37,8 @@ class MemoizationPolicy(Policy):
 
     def memorise(self, X, y, domain):
         assert X.shape[1] == self.max_history, \
-            "Trying to mem featurized data with {} historic turns. Expected {}".format(X.shape[1], self.max_history)
+            ("Trying to mem featurized data with {} historic turns. "
+             "Expected {}".format(X.shape[1], self.max_history))
         self.lookup = {}
         self.add(X, y, domain)
 
@@ -51,15 +52,21 @@ class MemoizationPolicy(Policy):
 
     def add(self, X, y, domain):
         assert X.shape[1] == self.max_history, \
-            "Trying to mem featurized data with {} historic turns. Expected {}".format(X.shape[1], self.max_history)
+            ("Trying to mem featurized data with {} historic turns. "
+             "Expected {}".format(X.shape[1], self.max_history))
         for _x, _y in zip(X, y):
             for _x_augmented in self._create_partial_histories(_x):
-                self.lookup[self._feature_vector_to_str(_x_augmented, domain)] = _y.item()
+                feature_key = self._feature_vector_to_str(_x_augmented, domain)
+                self.lookup[feature_key] = _y.item()
 
     def _feature_vector_to_str(self, x, domain):
-        feature_str = json.dumps(self.featurizer.decode_features(x, domain.input_features, ndigits=8)).replace("\"", "")
+        decoded_features = self.featurizer.decode(x,
+                                                  domain.input_features,
+                                                  ndigits=8)
+        feature_str = json.dumps(decoded_features).replace("\"", "")
         if ENABLE_FEATURE_STRING_COMPRESSION:
-            return base64.b64encode(zlib.compress(bytes(feature_str, "utf-8"))).decode("utf-8")
+            compressed = zlib.compress(bytes(feature_str, "utf-8"))
+            return base64.b64encode(compressed).decode("utf-8")
         else:
             return feature_str
 
@@ -83,11 +90,14 @@ class MemoizationPolicy(Policy):
         # type: (DialogueStateTracker, Domain) -> (float, Optional[int])
         """Predicts the next action the bot should take after seeing x.
 
-        This should be overwritten by more advanced policies to use ML to predict the action.
-        Returns the index of the next action"""
+        This should be overwritten by more advanced policies to use ML to
+        predict the action. Returns the index of the next action"""
         x = self.featurize(tracker, domain)
+        tracker_state = ["{}".format(e)
+                         for e in self.featurizer.decode(x,
+                                                         domain.input_features)]
         logger.debug('Current tracker state [\n\t{}]'.format(
-                "\n\t".join(["{}".format(e) for e in self.featurizer.decode_features(x, domain.input_features)])))
+                "\n\t".join(tracker_state)))
 
         memorised = self.recall(x, domain)
         result = [0.0] * domain.num_actions
@@ -101,7 +111,7 @@ class MemoizationPolicy(Policy):
         data = {
             "lookup": self.lookup
         }
-        create_dir_for_file(memorized_file)
+        utils.create_dir_for_file(memorized_file)
         with io.open(memorized_file, 'w') as f:
             f.write(str(json.dumps(data, indent=2)))
 
@@ -111,8 +121,11 @@ class MemoizationPolicy(Policy):
         if os.path.isfile(memorized_file):
             with io.open(memorized_file) as f:
                 data = json.loads(f.read())
-            return cls(data["lookup"], featurizer=featurizer, max_history=max_history)
+            return cls(data["lookup"],
+                       featurizer=featurizer,
+                       max_history=max_history)
         else:
-            logger.info("Couldn't load memoization for policy. File '{}' doesn't exist. ".format(memorized_file) +
-                        "Falling back to empty turn memory.")
+            logger.info("Couldn't load memoization for policy. "
+                        "File '{}' doesn't exist. Falling back to empty "
+                        "turn memory.".format(memorized_file))
             return None

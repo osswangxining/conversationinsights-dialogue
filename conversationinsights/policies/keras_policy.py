@@ -6,15 +6,14 @@ from __future__ import unicode_literals
 import io
 import json
 import logging
-
-import numpy as np
 import os
 import warnings
+
+import numpy as np
 from builtins import str
 
-from conversationinsights.featurizers import Featurizer
+from conversationinsights import utils
 from conversationinsights.policies import Policy
-from conversationinsights.util import create_dir_for_file
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +21,8 @@ logger = logging.getLogger(__name__)
 class KerasPolicy(Policy):
     SUPPORTS_ONLINE_TRAINING = True
 
-    def __init__(self, model=None, graph=None, current_epoch=0, featurizer=None, max_history=None):
+    def __init__(self, model=None, graph=None, current_epoch=0,
+                 featurizer=None, max_history=None):
         import keras
 
         super(KerasPolicy, self).__init__(featurizer, max_history)
@@ -47,7 +47,8 @@ class KerasPolicy(Policy):
 
     def predict_action_probabilities(self, tracker, domain):
         x = self.featurize(tracker, domain)
-        x = x.reshape((1, self.max_len, x.shape[1]))  # we need to add a batch dimension with length 1
+        # we need to add a batch dimension with length 1
+        x = x.reshape((1, self.max_len, x.shape[1]))
         if KerasPolicy.is_using_tensorflow() and self.graph is not None:
             with self.graph.as_default():
                 y_pred = self.model.predict(x, batch_size=1)
@@ -57,15 +58,19 @@ class KerasPolicy(Policy):
 
     def _build_model(self, num_features, num_actions, max_history_len):
         """Build a keras model and return a compiled model.
-        :param max_history_len: The maximum number of historical turns used to decide on next action"""
+
+        :param max_history_len: The maximum number of historical
+                                turns used to decide on next action
+        """
         from keras.layers import LSTM, Activation, Masking, Dense
         from keras.models import Sequential
 
         n_hidden = 32  # Neural Net and training params
+        batch_shape = (None, max_history_len, num_features)
         # Build Model
         model = Sequential()
-        model.add(Masking(-1, batch_input_shape=(None, max_history_len, num_features)))
-        model.add(LSTM(n_hidden, batch_input_shape=(None, max_history_len, num_features)))
+        model.add(Masking(-1, batch_input_shape=batch_shape))
+        model.add(LSTM(n_hidden, batch_input_shape=batch_shape))
         model.add(Dense(input_dim=n_hidden, units=num_actions))
         model.add(Activation('softmax'))
 
@@ -73,11 +78,13 @@ class KerasPolicy(Policy):
                       optimizer='rmsprop',
                       metrics=['accuracy'])
 
-        logger.info(model.summary())
+        logger.debug(model.summary())
         return model
 
     def train(self, X, y, domain, **kwargs):
-        self.model = self._build_model(domain.num_features, domain.num_actions, X.shape[1])
+        self.model = self._build_model(domain.num_features,
+                                       domain.num_actions,
+                                       X.shape[1])
         y_one_hot = np.zeros((len(y), domain.num_actions))
         y_one_hot[np.arange(len(y)), y] = 1
 
@@ -87,8 +94,9 @@ class KerasPolicy(Policy):
         shuffled_X = X[idx, :, :]
         shuffled_y = y_one_hot[idx, :]
 
-        logger.info("Fitting model with {} total samples and a validation split of {}".format(
-                number_of_samples, kwargs.get("validation_split", 0.0)))
+        validation_split = kwargs.get("validation_split", 0.0)
+        logger.info("Fitting model with {} total samples and a validation "
+                    "split of {}".format(number_of_samples, validation_split))
         self.model.fit(shuffled_X, shuffled_y, **kwargs)
         self.current_epoch = kwargs.get("epochs", 10)
         logger.info("Done fitting keras policy model")
@@ -98,14 +106,17 @@ class KerasPolicy(Policy):
         y_one_hot = np.zeros((len(y), domain.num_actions))
         y_one_hot[np.arange(len(y)), y] = 1
         self.current_epoch += 1
-        self.model.fit(X, y_one_hot, epochs=self.current_epoch + 1,
-                       batch_size=1, verbose=0, initial_epoch=self.current_epoch)
+        self.model.fit(X, y_one_hot,
+                       epochs=self.current_epoch + 1,
+                       batch_size=1,
+                       verbose=0,
+                       initial_epoch=self.current_epoch)
 
     def persist(self, path):
         if self.model:
             arch_file = os.path.join(path, 'keras_arch.json')
             weights_file = os.path.join(path, 'keras_weights.h5')
-            create_dir_for_file(weights_file)
+            utils.create_dir_for_file(weights_file)
             with io.open(arch_file, 'w') as f:
                 f.write(str(self.model.to_json()))
             with io.open(os.path.join(path, 'keras_policy.json'), 'w') as f:
@@ -115,7 +126,8 @@ class KerasPolicy(Policy):
                     "epochs": self.current_epoch})))
             self.model.save_weights(weights_file, overwrite=True)
         else:
-            warnings.warn("Persist called without a trained model present. Nothing to persist then!")
+            warnings.warn("Persist called without a trained model present. "
+                          "Nothing to persist then!")
 
     @classmethod
     def _load_model_arch(cls, path, meta):
@@ -151,7 +163,8 @@ class KerasPolicy(Policy):
                         featurizer=featurizer
                 )
             else:
-                return KerasPolicy(max_history=max_history, featurizer=featurizer)
+                return KerasPolicy(max_history=max_history,
+                                   featurizer=featurizer)
         else:
-            raise Exception("Failed to load dialogue model. Path {} doesn't exist".format(
-                    os.path.abspath(path)))
+            raise Exception("Failed to load dialogue model. Path {} "
+                            "doesn't exist".format(os.path.abspath(path)))

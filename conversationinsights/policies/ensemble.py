@@ -9,14 +9,18 @@ import logging
 import os
 
 import numpy as np
-import conversationinsights
+import typing
 from builtins import str
-from typing import Text, List, Optional
+from typing import Text, Optional
 
+import conversationinsights
+from conversationinsights import utils
 from conversationinsights.trackers import DialogueStateTracker
-from conversationinsights.util import create_dir_for_file, class_from_module_path
 
 logger = logging.getLogger(__name__)
+
+if typing.TYPE_CHECKING:
+    from conversationinsights.domain import Domain
 
 
 class PolicyEnsemble(object):
@@ -32,27 +36,30 @@ class PolicyEnsemble(object):
         # type: (DialogueStateTracker, Domain) -> (float, int)
         """Predicts the next action the bot should take after seeing x.
 
-        This should be overwritten by more advanced policies to use ML to predict the action.
-        Returns the index of the next action"""
+        This should be overwritten by more advanced policies to use ML to
+        predict the action. Returns the index of the next action"""
         probabilities = self.probabilities_using_best_policy(tracker, domain)
         max_index = np.argmax(probabilities)
-        logger.debug("Predicted next action #{} with prob {:.2f}.".format(max_index, probabilities[max_index]))
+        logger.debug("Predicted next action #{} with prob {:.2f}.".format(
+                max_index, probabilities[max_index]))
         return max_index
 
     def probabilities_using_best_policy(self, tracker, domain):
         raise NotImplementedError
 
     def _persist_metadata(self, path, max_history):
-        # type: (Text, List[Text]) -> None
+        # type: (Text, Optional[int]) -> None
         """Persists the domain specification to storage."""
 
         domain_spec_path = os.path.join(path, 'policy_metadata.json')
-        create_dir_for_file(domain_spec_path)
+        utils.create_dir_for_file(domain_spec_path)
+        policy_names = [p.__module__ + "." + p.__class__.__name__
+                        for p in self.policies]
         metadata = {
             "conversationinsights": conversationinsights.__version__,
             "max_history": max_history,
             "ensemble_name": self.__module__ + "." + self.__class__.__name__,
-            "policy_names": [p.__module__ + "." + p.__class__.__name__ for p in self.policies]
+            "policy_names": policy_names
         }
         with io.open(domain_spec_path, 'w') as f:
             f.write(str(json.dumps(metadata, indent=2)))
@@ -61,7 +68,10 @@ class PolicyEnsemble(object):
         # type: (Text) -> None
         """Persists the policy to storage."""
 
-        self._persist_metadata(path, self.policies[0].max_history if self.policies else None)
+        if self.policies:
+            self._persist_metadata(path, self.policies[0].max_history)
+        else:
+            self._persist_metadata(path, None)
 
         for policy in self.policies:
             policy.persist(path)
@@ -81,9 +91,11 @@ class PolicyEnsemble(object):
         metadata = cls.load_metadata(path)
         policies = []
         for policy_name in metadata["policy_names"]:
-            policy = class_from_module_path(policy_name).load(path, featurizer, metadata["max_history"])
+            policy_cls = utils.class_from_module_path(policy_name)
+            policy = policy_cls.load(path, featurizer, metadata["max_history"])
             policies.append(policy)
-        ensemble = class_from_module_path(metadata["ensemble_name"])(policies)
+        ensemble_cls = utils.class_from_module_path(metadata["ensemble_name"])
+        ensemble = ensemble_cls(policies)
         return ensemble
 
 

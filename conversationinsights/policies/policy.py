@@ -3,13 +3,10 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import io
-import json
 import logging
-import os
 
 import numpy as np
-from builtins import object, str
+from builtins import object
 from numpy.core.records import ndarray
 from typing import Any
 from typing import List
@@ -17,9 +14,8 @@ from typing import Optional
 from typing import Text
 
 from conversationinsights.domain import Domain
-from conversationinsights.featurizers import Featurizer, BinaryFeaturizer
+from conversationinsights.featurizers import Featurizer
 from conversationinsights.trackers import DialogueStateTracker
-from conversationinsights.util import create_dir_for_file
 
 logger = logging.getLogger(__name__)
 
@@ -41,7 +37,8 @@ class Policy(object):
         The tracker, consisting of multiple turns, will be transformed
         into a float vector which can be used by a ML model."""
 
-        x = domain.feature_vector_for_tracker(self.featurizer, tracker, self.max_history)
+        x = domain.feature_vector_for_tracker(self.featurizer, tracker,
+                                              self.max_history)
         return np.array(x)
 
     def predict_action_probabilities(self, tracker, domain):
@@ -62,8 +59,9 @@ class Policy(object):
     def continue_training(self, X, y, domain, **kwargs):
         """Continues training an already trained policy.
 
-        This doesn't need to be supported by every policy. If it is supported, the policy can be used for
-        online training and the implementation for the continued training should be put into this function."""
+        This doesn't need to be supported by every policy. If it is supported,
+        the policy can be used for online training and the implementation for
+        the continued training should be put into this function."""
         pass
 
     def persist(self, path):
