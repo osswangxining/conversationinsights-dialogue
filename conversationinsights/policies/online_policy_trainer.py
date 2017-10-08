@@ -13,7 +13,7 @@ from conversationinsights.controller import RegexInterpreter
 from conversationinsights.domain import check_domain_sanity
 from conversationinsights.events import RevertLastUserUtterance, UserUtterance
 from conversationinsights.channels.console import ConsoleInputChannel
-from conversationinsights.policies import Policy, PolicyTrainer
+from conversationinsights.policies import PolicyTrainer
 from conversationinsights.policies.ensemble import PolicyEnsemble
 from conversationinsights.tracker_store import InMemoryTrackerStore
 from conversationinsights.util import request_input, str_range_list, bcolors, wrap_with_color, one_hot
