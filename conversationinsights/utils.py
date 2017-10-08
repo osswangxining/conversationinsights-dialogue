@@ -3,21 +3,21 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import errno
 import os
 from collections import deque
+from hashlib import sha1
 
-import errno
 import six
-from typing import Text
-
-from conversationinsights.conversation import Topic
 from builtins import input, range, str
+from numpy import all, array
+from typing import Text
 
 
 def class_from_module_path(module_path):
-    """Given the module path of a class and its name, tries to retrieve that class.
+    """Given the module name and path of a class, tries to retrieve the class.
 
-    The loaded class can be used to instanciate new objects. """
+    The loaded class can be used to instantiate new objects. """
     import importlib
 
     # load the module, will raise ImportError if module cannot be loaded
@@ -37,10 +37,24 @@ def all_subclasses(cls):
                                    for g in all_subclasses(s)]
 
 
+def subsample_array(arr, max_values, can_modify_incoming_array=True, rand=None):
+    """Shuffles the array and returns `max_values` number of elements."""
+    import random
+
+    if not can_modify_incoming_array:
+        arr = arr[:]
+    if rand is not None:
+        rand.shuffle(arr)
+    else:
+        random.shuffle(arr)
+    return arr[:max_values]
+
+
 def is_int(value):
     """Checks if a value is an integer.
 
-    The type of the value is not important, it might be an int a string or a float."""
+    The type of the value is not important, it might be an int
+    a string or a float."""
 
     try:
         return value == int(value)
@@ -49,10 +63,11 @@ def is_int(value):
 
 
 def lazyproperty(fn):
-    """Allows to avoid recomputing a property over and over. Instead the result gets stored in a local var.
+    """Allows to avoid recomputing a property over and over.
 
-    Computation of the property will happen once, on the first call of the property. All succeeding calls will use
-    the value stored in the private property."""
+    Instead the result gets stored in a local var. Computation of the property
+    will happen once, on the first call of the property. All succeeding calls
+    will use the value stored in the private property."""
 
     attr_name = '_lazy_' + fn.__name__
 
@@ -80,7 +95,8 @@ def create_dir_for_file(file_path):
 def one_hot(hot_idx, length, dtype=None):
     import numpy
     if hot_idx >= length:
-        raise Exception("Can't create one hot. Index '{}' is out of range (length '{}')".format(hot_idx, length))
+        raise Exception("Can't create one hot. Index '{}' is out "
+                        "of range (length '{}')".format(hot_idx, length))
     r = numpy.zeros(length, dtype)
     r[hot_idx] = 1
     return r
@@ -93,7 +109,8 @@ def str_range_list(start, end):
 def request_input(valid_values, prompt=None, max_suggested=3):
     def wrong_input_message():
         print("Invalid answer, only {}{} allowed\n".format(
-                ", ".join(valid_values[:max_suggested]), ",..." if len(valid_values) > max_suggested else ""))
+                ", ".join(valid_values[:max_suggested]),
+                ",..." if len(valid_values) > max_suggested else ""))
 
     while True:
         try:
@@ -150,16 +167,20 @@ class TopicStack(object):
         return len(self.dq)
 
     def push(self, x):
+        from conversationinsights.conversation import Topic
+
         if isinstance(x, six.string_types):
             if x not in self.topic_names:
-                raise ValueError("Unknown topic name: '{}', known topics in this domain are: {}".format(
-                    x, self.topic_names))
+                raise ValueError(
+                        "Unknown topic name: '{}', known topics in this domain "
+                        "are: {}".format(x, self.topic_names))
             else:
                 x = self.topics[self.topic_names.index(x)]
 
         elif not isinstance(x, Topic) or x not in self.topics:
-            raise ValueError("Instance of type '{}' can not be used on the topic stact, not a valid topic!".format(
-                type(x).__name__))
+            raise ValueError(
+                    "Instance of type '{}' can not be used on the topic stack, "
+                    "not a valid topic!".format(type(x).__name__))
 
         while self.dq.count(x) > 0:
             self.dq.remove(x)
@@ -169,3 +190,49 @@ class TopicStack(object):
         if len(self.dq) < 1:
             return None
         return self.dq.pop()
+
+
+class HashableNDArray(object):
+    """Hashable wrapper for ndarray objects.
+
+    Instances of ndarray are not hashable, meaning they cannot be added to
+    sets, nor used as keys in dictionaries. This is by design - ndarray
+    objects are mutable, and therefore cannot reliably implement the
+    __hash__() method.
+
+    The hashable class allows a way around this limitation. It implements
+    the required methods for hashable objects in terms of an encapsulated
+    ndarray object. This can be either a copied instance (which is safer)
+    or the original object (which requires the user to be careful enough
+    not to modify it)."""
+
+    def __init__(self, wrapped, tight=False):
+        """Creates a new hashable object encapsulating an ndarray.
+
+        wrapped
+            The wrapped ndarray.
+
+        tight
+            Optional. If True, a copy of the input ndaray is created.
+            Defaults to False.
+        """
+        self.__tight = tight
+        self.__wrapped = array(wrapped) if tight else wrapped
+        self.__hash = int(sha1(wrapped.view()).hexdigest(), 16)
+
+    def __eq__(self, other):
+        return all(self.__wrapped == other.__wrapped)
+
+    def __hash__(self):
+        return self.__hash
+
+    def unwrap(self):
+        """Returns the encapsulated ndarray.
+
+        If the wrapper is "tight", a copy of the encapsulated ndarray is
+        returned. Otherwise, the encapsulated ndarray itself is returned."""
+
+        if self.__tight:
+            return array(self.__wrapped)
+
+        return self.__wrapped
