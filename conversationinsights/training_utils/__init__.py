@@ -3,20 +3,40 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from conversationinsights.training_utils.dsl import StoryFileReader, STORY_START
+from conversationinsights.interpreter import RegexInterpreter
+from conversationinsights.training_utils.dsl import StoryFileReader, STORY_START, \
+    TrainingsDataExtractor
+from conversationinsights.training_utils.story_graph import StoryGraph
 
 
-def create_stories_from_file(filename,
-                             available_bot_actions=None,
-                             start_checkpoint=STORY_START,
-                             augmentation_factor=20,
-                             max_history=1,
-                             remove_duplicates=True):
-    from conversationinsights.training_utils.dsl import StoryBuilder
-    story = StoryFileReader.read_from_file(filename, available_bot_actions)
-    return story.build_stories(
-            start_checkpoint,
-            remove_duplicates,
-            augmentation_factor,
-            max_history
-    )
+def extract_training_data_from_file(filename,
+                                    augmentation_factor=20,
+                                    max_history=1,
+                                    remove_duplicates=True,
+                                    domain=None,
+                                    featurizer=None,
+                                    interpreter=RegexInterpreter(),
+                                    max_number_of_trackers=2000):
+    graph = extract_story_graph_from_file(filename, domain)
+    extractor = TrainingsDataExtractor(graph, domain, featurizer, interpreter)
+    return extractor.extract_trainings_data(remove_duplicates,
+                                            augmentation_factor,
+                                            max_history,
+                                            max_number_of_trackers)
+
+
+def extract_stories_from_file(filename,
+                              domain,
+                              remove_duplicates=True,
+                              interpreter=RegexInterpreter(),
+                              max_number_of_trackers=2000):
+    graph = extract_story_graph_from_file(filename, domain)
+    return graph.build_stories(domain,
+                               interpreter,
+                               remove_duplicates,
+                               max_number_of_trackers)
+
+
+def extract_story_graph_from_file(filename, domain):
+    story_steps = StoryFileReader.read_from_file(filename, domain)
+    return StoryGraph(story_steps)
