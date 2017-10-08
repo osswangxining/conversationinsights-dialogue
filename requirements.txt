@@ -1,25 +1,19 @@
 ## Setup py requirements
 -e .
 apscheduler==3.3.1
-Keras==2.0.4
 fakeredis==0.8.2
 future==0.16.0
 graphviz==0.7.1
 h5py==2.7.0
 jsonpickle==0.9.4
-jupyter==1.0.0
-keras==2.0.4
-nbsphinx==0.2.13
+keras==2.0.8
 numpy==1.13.1
 pandoc==1.0.0b2
-pytest-cov==2.5.1
-pytest-flask==0.10.0
-pytest-pep8==1.0.6
-pytest-services==1.2.1
-pytest-xdist==1.15.0
 redis==2.10.5
 six==1.10.0
 tensorflow==1.1.0
-typing==3.6.1
+typing==3.6.2
 networkx==1.11
 pymessenger==0.0.7.0
+tqdm==4.11.2
+ConfigArgParse==0.12.0
