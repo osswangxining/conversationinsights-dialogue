@@ -6,9 +6,10 @@ from __future__ import unicode_literals
 import logging
 
 import six
-from conversationinsights.agent import Agent
-from conversationinsights.interpreter import MyNLUHttpInterpreter
-from conversationinsights.channels.console import ConsoleInputChannel
+
+from rasa_core.agent import Agent
+from rasa_core.channels.console import ConsoleInputChannel
+from rasa_core.interpreter import RasaNLUInterpreter
 
 if six.PY2:
     nlu_model_path = 'examples/babi/models/nlu/current_py2'
@@ -18,8 +19,8 @@ else:
 
 def run_babi(serve_forever=True):
     agent = Agent.load("examples/babi/models/policy/current",
-                       interpreter=MyNLUHttpInterpreter("default",
-                                                          "token", "http://127.0.0.1:5000"))
+                       interpreter=RasaNLUInterpreter(nlu_model_path))
+
     if serve_forever:
         agent.handle_channel(ConsoleInputChannel())
     return agent

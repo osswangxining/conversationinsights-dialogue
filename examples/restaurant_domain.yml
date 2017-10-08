@@ -30,48 +30,48 @@ entities:
 
 templates:
   utter_greet:
-    - "hey 你好!"
+    - "hey there!"
   utter_goodbye:
-    - "再见 :)"
+    - "goodbye :("
   utter_default:
-    - "对不起，没理解您在说什么！"
+    - "default message"
   utter_ack_dosearch: 
-    - "好的，我帮您查一下。"
+    - "ok let me see what I can find"
   utter_ack_findalternatives:
-    - "那看一下还有没有其他的。"
+    - "ok let me see what else there is"
   utter_ack_makereservation:
-    - "OK，那就帮您预定了。"
+    - "ok making a reservation"
   utter_ask_cuisine: 
-    - "请问您需要什么菜系？"
+    - "what kind of cuisine would you like?"
   utter_ask_helpmore:
-    - "请问还需要其他服务吗？"
+    - "is there anything more that I can help with?"
   utter_ask_howcanhelp:
-    - "您好，请问有什么可以帮到您？"
+    - "how can I help you?"
   utter_ask_location:
-    - "请问在哪个城市？"
+    - "in which city?"
   utter_ask_moreupdates: 
-    - "还有其他需要更改的吗？"
+    - "anything else you'd like to modify?"
   utter_ask_numpeople:
-    - "请问几个人？"
+    - "for how many people?"
   utter_ask_price: 
-    - "请问需要什么价位？"
+    - "in which price range?"
   utter_on_it: 
-    - "好的，没问题。"
+    - "I'm on it"
 
 actions:
-  - greet
-  - goodbye
-  - default
-  - ack_dosearch
-  - ack_findalternatives
-  - ack_makereservation
-  - ask_cuisine
-  - ask_helpmore
-  - ask_howcanhelp
-  - ask_location
-  - ask_moreupdates
-  - ask_numpeople
-  - ask_price
-  - on_it
+  - utter_greet
+  - utter_goodbye
+  - utter_default
+  - utter_ack_dosearch
+  - utter_ack_findalternatives
+  - utter_ack_makereservation
+  - utter_ask_cuisine
+  - utter_ask_helpmore
+  - utter_ask_howcanhelp
+  - utter_ask_location
+  - utter_ask_moreupdates
+  - utter_ask_numpeople
+  - utter_ask_price
+  - utter_on_it
   - examples.restaurant_example.ActionSearchRestaurants
   - examples.restaurant_example.ActionSuggest

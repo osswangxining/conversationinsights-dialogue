@@ -3,13 +3,13 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from conversationinsights.actions.action import Action
-from conversationinsights.events import SetSlot
+from rasa_core.actions.action import Action
+from rasa_core.events import SlotSet
 
 
 class ActionSearchConcerts(Action):
     def name(self):
-        return 'search_concerts'
+        return 'action_search_concerts'
 
     def run(self, dispatcher, tracker, domain):
         concerts = [
@@ -18,12 +18,12 @@ class ActionSearchConcerts(Action):
         ]
         description = ", ".join([c["artist"] for c in concerts])
         dispatcher.utter_message("{}".format(description))
-        return [SetSlot("concerts", concerts)]
+        return [SlotSet("concerts", concerts)]
 
 
 class ActionSearchVenues(Action):
     def name(self):
-        return 'search_venues'
+        return 'action_search_venues'
 
     def run(self, dispatcher, tracker, domain):
         venues = [
@@ -33,12 +33,12 @@ class ActionSearchVenues(Action):
         dispatcher.utter_message("here are some venues I found")
         description = ", ".join([c["name"] for c in venues])
         dispatcher.utter_message("{}".format(description))
-        return [SetSlot("venues", venues)]
+        return [SlotSet("venues", venues)]
 
 
 class ActionShowConcertReviews(Action):
     def name(self):
-        return 'show_concert_reviews'
+        return 'action_show_concert_reviews'
 
     def run(self, dispatcher, tracker, domain):
         concerts = tracker.get_slot("concerts")
@@ -48,7 +48,7 @@ class ActionShowConcertReviews(Action):
 
 class ActionShowVenueReviews(Action):
     def name(self):
-        return 'show_venue_reviews'
+        return 'action_show_venue_reviews'
 
     def run(self, dispatcher, tracker, domain):
         venues = tracker.get_slot("venues")

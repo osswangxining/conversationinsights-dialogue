@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 
 import numpy as np
 
-from conversationinsights.actions.action import ACTION_LISTEN_NAME
+from rasa_core.actions.action import ACTION_LISTEN_NAME
 
 
 class Customer:
@@ -24,9 +24,11 @@ class Customer:
             'location': np.random.choice(self.city),
             'price': np.random.choice(self.price)
         }
+        init_size = np.random.poisson(informativeness - 1) + 1
         initial_information = np.random.choice(list(self.preferences.keys()),
-                                               size=np.random.poisson(informativeness - 1) + 1, replace=False)
-        entity_strings = ','.join(['{}={}'.format(key, self.preferences[key]) for key in initial_information])
+                                               size=init_size, replace=False)
+        entity_strings = ','.join(['{}={}'.format(key, self.preferences[key])
+                                   for key in initial_information])
 
         self.opening_inform = '_inform[{}]'.format(entity_strings)
 
@@ -59,9 +61,9 @@ class Customer:
             return '_greet'
         else:
             previous_actions = tracker.latest_action_ids
-            if len(previous_actions) < 2 or \
-                    previous_actions[-1] != ACTION_LISTEN_NAME or \
-                    previous_actions[-2] not in self.response_dict:
+            if (len(previous_actions) < 2 or
+                    previous_actions[-1] != ACTION_LISTEN_NAME or
+                    previous_actions[-2] not in self.response_dict):
                 # if the robot is not listening
                 return 0
             output = self.response_dict[previous_actions[-2]]
@@ -70,7 +72,8 @@ class Customer:
             elif output.startswith('_'):
                 return output
             elif output.startswith('.'):
-                entity_string = '{}={}'.format(output[1:], self.preferences[output[1:]])
+                entity_string = '{}={}'.format(output[1:],
+                                               self.preferences[output[1:]])
                 return '_inform[{}]'.format(entity_string)
             elif output == 'coinflip':
                 response = int(np.random.binomial(1, 0.5))
@@ -82,11 +85,14 @@ class Customer:
                     self.happy = True
                     return '_affirm'
                 else:
-                    set_guess = set([k for k, s in tracker.slots.items() if s.value])
+                    set_guess = set([k
+                                     for k, s in tracker.slots.items()
+                                     if s.value])
                     set_true = set(self.preferences.items())
                     fixes = set_true - set_guess
                     print(fixes)
-                    entity_string = ','.join(['{}={}'.format(fix[0], fix[1]) for fix in fixes])
+                    entity_string = ','.join(['{}={}'.format(
+                            fix[0], fix[1]) for fix in fixes])
                     return '_inform[{}]'.format(entity_string)
             elif output == 'happy_test':
                 if self.happy is True:
@@ -95,8 +101,9 @@ class Customer:
                 else:
                     return '_deny'
             elif output == 'reset':
-                self.__init__(indecisiveness=self.indecisiveness, informativeness=self.informativeness)
-                tracker.reset()
+                self.__init__(indecisiveness=self.indecisiveness,
+                              informativeness=self.informativeness)
+                tracker._reset()
                 return 'reset'
         self.rethink()
 
@@ -110,6 +117,7 @@ class Customer:
             }
             random_key = np.random.choice(new_preferences)
             self.preferences[random_key] = new_preferences[random_key]
-            return '_inform[{}:{}]'.format(random_key, new_preferences[random_key])
+            return '_inform[{}:{}]'.format(
+                    random_key, new_preferences[random_key])
         else:
             return '_deny'

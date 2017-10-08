@@ -1,9 +1,0 @@
-{
-  "ensemble_name": "conversationinsights.policies.ensemble.SimplePolicyEnsemble", 
-  "conversationinsights": "0.1", 
-  "policy_names": [
-    "conversationinsights.policies.memoization.MemoizationPolicy", 
-    "conversationinsights.policies.keras_policy.KerasPolicy"
-  ], 
-  "max_history": 3
-}

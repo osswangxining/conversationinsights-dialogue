@@ -7,24 +7,18 @@ import logging
 import sys
 
 from examples.fake_user.fake_user import Customer
-from conversationinsights.agent import Agent
-from conversationinsights.controller import MessageProcessor
-from conversationinsights.domain import TemplateDomain
-from conversationinsights.featurizers import BinaryFeaturizer
-from conversationinsights.interpreter import RegexInterpreter
-from conversationinsights.channels import UserMessage
-from conversationinsights.channels.console import ConsoleOutputChannel, ConsoleInputChannel
-from conversationinsights.policies.keras_policy import KerasPolicy
-from conversationinsights.policies.memoization import MemoizationPolicy
-from conversationinsights.policies.online_policy_trainer import OnlinePolicyTrainer
-from conversationinsights.tracker_store import InMemoryTrackerStore
+from rasa_core.agent import Agent
+from rasa_core.channels.console import ConsoleOutputChannel, ConsoleInputChannel
+from rasa_core.interpreter import RegexInterpreter
+from rasa_core.policies.keras_policy import KerasPolicy
+from rasa_core.policies.memoization import MemoizationPolicy
 
 logger = logging.getLogger(__name__)
 
 
 def run_fake_user(input_channel, max_training_samples=10, serve_forever=True):
     customer = Customer()
-    training_data_file = 'examples/babi/data/babi_task5_fu_fewer_actions.md'
+    training_data = 'examples/babi/data/babi_task5_fu_rasa_fewer_actions.md'
 
     logger.info("Starting to train policy")
 
@@ -32,7 +26,7 @@ def run_fake_user(input_channel, max_training_samples=10, serve_forever=True):
                   policies=[MemoizationPolicy(), KerasPolicy()],
                   interpreter=RegexInterpreter())
 
-    agent.train_online(training_data_file,
+    agent.train_online(training_data,
                        input_channel=input_channel,
                        epochs=1,
                        max_training_samples=max_training_samples)
@@ -41,9 +35,11 @@ def run_fake_user(input_channel, max_training_samples=10, serve_forever=True):
         tracker = agent.tracker_store.retrieve('default')
         back = customer.respond_to_action(tracker)
         if back == 'reset':
-            agent.handle_message("_greet", output_channel=ConsoleOutputChannel())
+            agent.handle_message("_greet",
+                                 output_channel=ConsoleOutputChannel())
         else:
-            agent.handle_message(back, output_channel=ConsoleOutputChannel())
+            agent.handle_message(back,
+                                 output_channel=ConsoleOutputChannel())
 
     return agent
 

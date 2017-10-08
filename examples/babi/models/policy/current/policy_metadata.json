@@ -1,9 +1,9 @@
 {
-  "ensemble_name": "conversationinsights.policies.ensemble.SimplePolicyEnsemble", 
-  "conversationinsights": "0.1", 
+  "ensemble_name": "rasa_core.policies.ensemble.SimplePolicyEnsemble", 
   "policy_names": [
-    "conversationinsights.policies.memoization.MemoizationPolicy", 
-    "examples.restaurant_example.RestaurantPolicy"
+    "rasa_core.policies.memoization.MemoizationPolicy", 
+    "rasa_core.policies.keras_policy.KerasPolicy"
   ], 
-  "max_history": 3
+  "max_history": 3, 
+  "rasa_core": "0.7.0"
 }

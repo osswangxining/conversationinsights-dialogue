@@ -6,8 +6,8 @@ from __future__ import unicode_literals
 import logging
 
 from examples.concerts.policy import ConcertPolicy
-from conversationinsights.agent import Agent
-from conversationinsights.policies.memoization import MemoizationPolicy
+from rasa_core.agent import Agent
+from rasa_core.policies.memoization import MemoizationPolicy
 
 if __name__ == '__main__':
     logging.basicConfig(level="INFO")
@@ -19,11 +19,12 @@ if __name__ == '__main__':
                   policies=[MemoizationPolicy(), ConcertPolicy()])
 
     agent.train(
-        training_data_file,
-        max_history=2,
-        epochs=200,
-        batch_size=10,
-        validation_split=0.2
+            training_data_file,
+            augmentation_factor=50,
+            max_history=2,
+            epochs=500,
+            batch_size=10,
+            validation_split=0.2
     )
 
     agent.persist(model_path)

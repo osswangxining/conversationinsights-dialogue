@@ -8,13 +8,13 @@ entities:
 
 templates:
   utter_greet:
-    - "你好！"
+    - "hey there!"
   utter_goodbye:
-    - "再见 :("
+    - "goodbye :("
   utter_default:
-    - "对不起，我不明白你在说什么？"
+    - "default message"
 
 actions:
-  - default
-  - greet
-  - goodbye
+  - utter_default
+  - utter_greet
+  - utter_goodbye

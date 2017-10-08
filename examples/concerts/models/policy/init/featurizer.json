@@ -1,1 +1,1 @@
-{"py/object": "conversationinsights.featurizers.BinaryFeaturizer"}
+{"py/object": "rasa_core.featurizers.BinaryFeaturizer"}

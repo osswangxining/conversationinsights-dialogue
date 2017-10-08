@@ -26,10 +26,10 @@ templates:
     - you're very welcome
 
 actions:
-  - default
-  - greet
-  - goodbye
-  - youarewelcome
+  - utter_default
+  - utter_greet
+  - utter_goodbye
+  - utter_youarewelcome
   - examples.concerts.actions.ActionSearchConcerts
   - examples.concerts.actions.ActionSearchVenues
   - examples.concerts.actions.ActionShowConcertReviews
