@@ -21,9 +21,9 @@ templates:
     - default message
 
 actions:
-  - default
-  - greet
-  - goodbye
+  - utter_default
+  - utter_greet
+  - utter_goodbye
 
 topics:
   - question

@@ -1,8 +1,8 @@
 {
-  "py/object": "conversationinsights.conversation.Dialogue",
+  "py/object": "rasa_core.conversation.Dialogue",
   "events": [
     {
-      "py/object": "conversationinsights.events.UserUtterance",
+      "py/object": "rasa_core.events.UserUttered",
       "entities": [],
       "intent": {
         "name": "ask_question",
@@ -11,12 +11,12 @@
       "text": "_ask_question"
     },
     {
-      "py/object": "conversationinsights.events.ExecutedAction",
-      "action_name": "action_answer_question",
+      "py/object": "rasa_core.events.ActionExecuted",
+      "action_name": "utter_answer_question",
       "unpredictable": false
     },
     {
-      "py/object": "conversationinsights.events.SetTopic",
+      "py/object": "rasa_core.events.TopicSet",
       "topic": "question"
     }
   ],

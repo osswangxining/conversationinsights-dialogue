@@ -1,8 +1,8 @@
 {  
-  "py/object":"conversationinsights.conversation.Dialogue",
+  "py/object":"rasa_core.conversation.Dialogue",
   "events":[
     {
-      "py/object": "conversationinsights.events.UserUtterance",
+      "py/object": "rasa_core.events.UserUttered",
       "entities": [],
       "intent": {
         "name": "greet",
@@ -11,8 +11,8 @@
       "text": "_greet"
     },
     {
-      "py/object": "conversationinsights.events.ExecutedAction",
-      "action_name": "action_greet",
+      "py/object": "rasa_core.events.ActionExecuted",
+      "action_name": "utter_greet",
       "unpredictable": false
     }
   ],

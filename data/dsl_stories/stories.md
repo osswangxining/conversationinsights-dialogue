@@ -1,32 +1,32 @@
 ## simple_story_without_checkpoint
 * _simple                       <!-- user utterance in _intent[entities] format -->
-    - do_something_with_simple_1
-    - do_something_with_simple_2
+    - utter_default
+    - utter_greet
 
 ## simple_story_with_only_start
 > check_greet                   <!-- checkpoints at the start define entry points -->
 * _simple
     - slot["nice_person"]
-    - do_something_with_simple
+    - utter_default
 
 ## simple_story_with_only_end
 * _hello
-    - do_something_with_hello
+    - utter_greet
     - slot{"name": "peter"}
     - slot{"nice_person": ""}
 > check_greet                   <!-- checkpoint defining the end of this turn -->
 
 ## simple_story_with_multiple_turns
 * _affirm OR _thank_you
-    - do_something_with_affirmation
+    - utter_default
 * _goodbye
-    - do_something_with_goodbye
+    - utter_goodbye
 > check_goodbye        
 
-## INVALID_LOOP                <!-- creates a loop, which will lead to rejection of this block -->
+## why does the user want to leave?
 > check_goodbye
 * _why
-    - do_something_with_why
+    - utter_default
 > check_greet
 
 ## show_it_all
@@ -34,10 +34,9 @@
 > check_hello                   <!-- allows multiple entry points -->
 
 * _next_intent            
-    - action_greet              <!-- actions taken by the bot -->
+    - utter_greet              <!-- actions taken by the bot -->
     
 > check_intermediate            <!-- allows intermediate checkpoints -->
 
 * _change_bank_details
-    - action_confirm_change_bank
-    - action_enter_insurance_number  <!-- allows to end without checkpoints -->
+    - utter_default            <!-- allows to end without checkpoints -->

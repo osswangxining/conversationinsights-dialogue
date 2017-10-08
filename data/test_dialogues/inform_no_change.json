@@ -1,9 +1,9 @@
 {
-  "py/object": "conversationinsights.conversation.Dialogue",
+  "py/object": "rasa_core.conversation.Dialogue",
   "name": "inform_but_no_change_wanted",
   "events": [
     {
-      "py/object": "conversationinsights.events.UserUtterance",
+      "py/object": "rasa_core.events.UserUttered",
       "entities": [],
       "intent": {
         "name": "inform_addresschange",
@@ -12,17 +12,17 @@
       "text": "_inform_addresschange"
     },
     {
-      "py/object": "conversationinsights.events.ExecutedAction",
-      "action_name": "action_bot_taking_over",
+      "py/object": "rasa_core.events.ActionExecuted",
+      "action_name": "utter_bot_taking_over",
       "unpredictable": false
     },
     {
-      "py/object": "conversationinsights.events.ExecutedAction",
-      "action_name": "action_ask_for_address_change",
+      "py/object": "rasa_core.events.ActionExecuted",
+      "action_name": "utter_ask_for_address_change",
       "unpredictable": false
     },
     {
-      "py/object": "conversationinsights.events.UserUtterance",
+      "py/object": "rasa_core.events.UserUttered",
       "entities": [],
       "intent": {
         "name": "deny",
@@ -31,8 +31,8 @@
       "text": "_deny"
     },
     {
-      "py/object": "conversationinsights.events.ExecutedAction",
-      "action_name": "action_no_address_change",
+      "py/object": "rasa_core.events.ActionExecuted",
+      "action_name": "utter_no_address_change",
       "unpredictable": false
     }
   ]
