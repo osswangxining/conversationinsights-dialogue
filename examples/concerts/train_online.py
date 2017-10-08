@@ -6,10 +6,10 @@ from __future__ import unicode_literals
 import logging
 
 from examples.concerts.policy import ConcertPolicy
-from rasa_core.agent import Agent
-from rasa_core.channels.console import ConsoleInputChannel
-from rasa_core.interpreter import RegexInterpreter
-from rasa_core.policies.memoization import MemoizationPolicy
+from conversationinsights.agent import Agent
+from conversationinsights.channels.console import ConsoleInputChannel
+from conversationinsights.interpreter import RegexInterpreter
+from conversationinsights.policies.memoization import MemoizationPolicy
 
 logger = logging.getLogger(__name__)
 

@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 
 import logging
 
-from rasa_core.policies.keras_policy import KerasPolicy
+from conversationinsights.policies.keras_policy import KerasPolicy
 
 logger = logging.getLogger(__name__)
 

@@ -3,8 +3,8 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from rasa_core.actions.action import Action
-from rasa_core.events import SlotSet
+from conversationinsights.actions.action import Action
+from conversationinsights.events import SlotSet
 
 
 class ActionSearchConcerts(Action):

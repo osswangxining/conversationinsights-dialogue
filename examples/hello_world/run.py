@@ -7,14 +7,14 @@ import logging
 
 import numpy as np
 
-from rasa_core import utils
-from rasa_core.actions.action import ACTION_LISTEN_NAME
-from rasa_core.agent import Agent
-from rasa_core.channels.console import ConsoleInputChannel
-from rasa_core.domain import TemplateDomain
-from rasa_core.interpreter import NaturalLanguageInterpreter
-from rasa_core.policies import Policy
-from rasa_core.tracker_store import InMemoryTrackerStore
+from conversationinsights import utils
+from conversationinsights.actions.action import ACTION_LISTEN_NAME
+from conversationinsights.agent import Agent
+from conversationinsights.channels.console import ConsoleInputChannel
+from conversationinsights.domain import TemplateDomain
+from conversationinsights.interpreter import NaturalLanguageInterpreter
+from conversationinsights.policies import Policy
+from conversationinsights.tracker_store import InMemoryTrackerStore
 
 logger = logging.getLogger(__name__)
 

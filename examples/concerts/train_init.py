@@ -6,8 +6,8 @@ from __future__ import unicode_literals
 import logging
 
 from examples.concerts.policy import ConcertPolicy
-from rasa_core.agent import Agent
-from rasa_core.policies.memoization import MemoizationPolicy
+from conversationinsights.agent import Agent
+from conversationinsights.policies.memoization import MemoizationPolicy
 
 if __name__ == '__main__':
     logging.basicConfig(level="INFO")

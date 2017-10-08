@@ -5,9 +5,9 @@ from __future__ import unicode_literals
 
 import logging
 
-from rasa_core.agent import Agent
-from rasa_core.channels.console import ConsoleInputChannel
-from rasa_core.interpreter import RegexInterpreter
+from conversationinsights.agent import Agent
+from conversationinsights.channels.console import ConsoleInputChannel
+from conversationinsights.interpreter import RegexInterpreter
 
 
 def run_concerts(serve_forever=True):
@@ -20,5 +20,5 @@ def run_concerts(serve_forever=True):
 
 
 if __name__ == '__main__':
-    logging.basicConfig(level="INFO")
+    logging.basicConfig(level="DEBUG")
     run_concerts()
