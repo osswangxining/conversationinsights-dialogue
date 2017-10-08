@@ -2,7 +2,9 @@ from conversationinsights.channels import OutputChannel
 
 
 class CollectingOutputChannel(OutputChannel):
-    """Output channel that collects send messages in a list (doesn't send them anywhere, just collects them)."""
+    """Output channel that collects send messages in a list
+
+    (doesn't send them anywhere, just collects them)."""
 
     def __init__(self):
         self.messages = []

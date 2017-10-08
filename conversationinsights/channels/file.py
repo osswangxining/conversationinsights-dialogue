@@ -12,22 +12,27 @@ from conversationinsights.channels.channel import InputChannel, UserMessage
 class FileInputChannel(InputChannel):
     """Input channel that reads the user messages from a specified file.
 
-    If there are lines in the file that should not be used as user messages, or if the user messages are
-    surrounded by other symbols that should not be part of the user message, you can use a regular expression
-    to only match the user message. The `message_line_pattern` needs to be passed in as a string. The default
-    is `.*` hence, considering the whole line as the user message. Either the whole message (if no capturing
-    group is present) or the first capturing group will be used as the user message."""
+    If there are lines in the file that should not be used as user messages,
+    or if the user messages are surrounded by other symbols that should not be
+    part of the user message, you can use a regular expression to only match
+    the user message. The `message_line_pattern` needs to be passed in as a
+    string. The default is `.*` hence, considering the whole line as the user
+    message. Either the whole message (if no capturing group is present) or the
+    first capturing group will be used as the user message."""
 
     def __init__(self,
                  file_name,
                  output_channel=None,
                  message_line_pattern=".*",
                  max_messages=None):
-        from conversationinsights.channels.console import ConsoleOutputChannel
+        from rasa_core.channels.console import ConsoleOutputChannel
         self.message_filter = re.compile(message_line_pattern)
         self.file_name = file_name
         self.max_messages = max_messages
-        self.output_channel = output_channel if output_channel else ConsoleOutputChannel()
+        if output_channel:
+            self.output_channel = output_channel
+        else:
+            self.output_channel = ConsoleOutputChannel()
 
     def _record_messages(self, on_message):
         with io.open(self.file_name, 'r') as f:
