@@ -10,10 +10,14 @@ from conversationinsights.channels import OutputChannel
 
 
 class Element(dict):
-    __acceptable_keys = ['title', 'item_url', 'image_url', 'subtitle', 'buttons']
+    __acceptable_keys = ['title', 'item_url', 'image_url',
+                         'subtitle', 'buttons']
 
     def __init__(self, *args, **kwargs):
-        kwargs = {k: v for k, v in kwargs.items() if k in self.__acceptable_keys}
+        kwargs = {key: value
+                  for key, value in kwargs.items()
+                  if key in self.__acceptable_keys}
+
         super(Element, self).__init__(*args, **kwargs)
 
 
@@ -45,21 +49,33 @@ class Dispatcher(object):
     def utter_custom_message(self, *elements):
         # type: (*Dict[Text, Any]) -> None
         """Sends a message with custom elements to the output channel."""
+
         self.output_channel.send_custom_message(self.sender, elements)
 
     def utter_button_message(self, text, buttons, **kwargs):
         # type: (Text, List[Dict[Text, Any]], **Any) -> None
         """Sends a message with buttons to the output channel."""
-        self.output_channel.send_text_with_buttons(self.sender, text, buttons, **kwargs)
+
+        self.output_channel.send_text_with_buttons(self.sender, text, buttons,
+                                                   **kwargs)
+
+    def utter_button_template(self, template, buttons, **kwargs):
+        # type: (Text, List[Dict[Text, Any]], **Any) -> None
+        """Sends a message template with buttons to the output channel."""
+
+        self.utter_button_message(self.retrieve_template(template, **kwargs),
+                                  buttons, **kwargs)
 
     def utter_attachment(self, attachment):
         # type: (Text) -> None
         """Send a message to the client with attachements."""
+
         self.output_channel.send_image_url(self.sender, attachment)
 
     def utter_template(self, template, **kwargs):
         # type: (Text, **Any) -> None
-        """"Send a message to the client based on a template defined in the domain."""
+        """"Send a message to the client based on a template."""
+
         self.utter_message(self.retrieve_template(template, **kwargs))
 
     def retrieve_template(self, template, **kwargs):
