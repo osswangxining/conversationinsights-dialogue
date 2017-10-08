@@ -48,3 +48,6 @@ setup(
     author_email='',
     url=''
 )
+
+print("\nWelcome to Conversation Insights powered by Machine Learning and Deep Learning!")
+print("If any questions please visit web page https://osswangxining.github.io or send mail to osswangxining@163.com.")
