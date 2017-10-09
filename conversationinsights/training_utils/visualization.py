@@ -12,7 +12,6 @@ from conversationinsights.events import UserUttered, ActionExecuted
 from conversationinsights.interpreter import RegexInterpreter
 from conversationinsights.training_utils import STORY_START
 from conversationinsights.training_utils.story_graph import StoryGraph
-from mynlu.training_data import TrainingData
 
 EDGE_NONE_LABEL = "NONE"
 

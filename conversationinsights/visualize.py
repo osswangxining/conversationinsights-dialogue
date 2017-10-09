@@ -52,7 +52,7 @@ if __name__ == '__main__':
     # messages in the stories should be replaced with actual
     # messages (e.g. `hello`)
     if args.nlu_data is not None:
-        from rasa_nlu.converters import load_data
+        from mynlu.converters import load_data
 
         nlu_data = load_data(args.nlu_data)
     else:
